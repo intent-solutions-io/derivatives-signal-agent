@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  # Background loop mode (default)
+  agent:
+    build: .
+    container_name: derivatives-signal-agent
+    volumes:
+      - ./data:/app/data
+      - ./config.yaml:/app/config.yaml:ro
+    environment:
+      - BYBIT_API_KEY=${BYBIT_API_KEY}
+      - BYBIT_API_SECRET=${BYBIT_API_SECRET}
+      - COINGLASS_API_KEY=${COINGLASS_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    restart: unless-stopped
+
+  # REST API server mode
+  api:
+    build: .
+    container_name: derivatives-signal-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./config.yaml:/app/config.yaml:ro
+    environment:
+      - BYBIT_API_KEY=${BYBIT_API_KEY}
+      - BYBIT_API_SECRET=${BYBIT_API_SECRET}
+      - COINGLASS_API_KEY=${COINGLASS_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    command: ["python", "main.py", "--config", "/app/config.yaml", "--serve"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health').raise_for_status()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    profiles:
+      - api
+
+  # Doctor acceptance test
+  doctor:
+    build: .
+    container_name: derivatives-signal-doctor
+    volumes:
+      - ./data:/app/data
+      - ./config.yaml:/app/config.yaml:ro
+      - ./doctor-report.json:/app/doctor-report.json
+    environment:
+      - BYBIT_API_KEY=${BYBIT_API_KEY}
+      - BYBIT_API_SECRET=${BYBIT_API_SECRET}
+      - COINGLASS_API_KEY=${COINGLASS_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    command: ["python", "doctor.py", "--config", "/app/config.yaml", "--output", "/app/doctor-report.json"]
+    profiles:
+      - doctor

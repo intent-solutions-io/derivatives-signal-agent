@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environment
+.env
+.venv/
+venv/
+
+# Data
+data/
+*.db
+
+# Reports
+doctor-report.json
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Config (buyer creates their own)
+config.yaml
+
+# Releases
+releases/
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/

@@ -1,0 +1,138 @@
+# Derivatives Signal Agent - Example Configuration
+# Copy this file to config.yaml and customize
+
+version: "1.0.0"
+
+# =============================================================================
+# BYBIT - Primary data source (free API)
+# =============================================================================
+bybit:
+  base_url: "https://api.bybit.com"
+  api_key_env: "BYBIT_API_KEY"
+  api_secret_env: "BYBIT_API_SECRET"
+  timeout_seconds: 10.0
+
+# =============================================================================
+# COINGLASS - Aggregated derivatives data ($29/mo - buyer pays)
+# Sign up at: https://www.coinglass.com/pricing
+# =============================================================================
+coinglass:
+  base_url: "https://open-api-v3.coinglass.com"
+  api_key_env: "COINGLASS_API_KEY"
+  timeout_seconds: 10.0
+
+# =============================================================================
+# CLAUDE - AI analysis engine
+# =============================================================================
+claude:
+  api_key_env: "ANTHROPIC_API_KEY"
+  model: "claude-sonnet-4-5-20250929"
+  max_tokens: 2048
+  temperature: 0.3
+
+# =============================================================================
+# ANALYSIS - Symbols and thresholds
+# =============================================================================
+analysis:
+  symbols:
+    - BTCUSDT
+    - ETHUSDT
+    # - SOLUSDT
+    # - BNBUSDT
+    # - XRPUSDT
+    # - DOGEUSDT
+    # - AVAXUSDT
+    # - LINKUSDT
+  strong_signal_threshold: 50
+  orderbook_depth: 25
+
+# =============================================================================
+# NOTIFICATIONS - Where to send signals
+# =============================================================================
+notifications:
+  channels:
+    - slack
+    # - webhook
+    # - email
+    # - telegram
+
+  slack:
+    webhook_url: "https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
+    channel: null  # Uses webhook default
+    mention_on_strong: null  # e.g., "@channel" or "U0123456789"
+
+  webhook:
+    url: null
+    headers: null
+
+  email:
+    smtp_host: null
+    smtp_port: 587
+    smtp_user: null
+    email_from: null
+    email_to: []
+
+  telegram:
+    chat_id: null
+    bot_token_env: "TELEGRAM_BOT_TOKEN"
+
+# =============================================================================
+# STORAGE - Signal persistence
+# =============================================================================
+storage:
+  backend: sqlite  # "sqlite" (default) or "supabase"
+
+  sqlite:
+    path: "data/signals.db"
+    retention_days: 90
+
+  supabase:
+    url_env: "SUPABASE_URL"
+    key_env: "SUPABASE_ANON_KEY"
+    table_name: "signals"
+
+# =============================================================================
+# CACHE - TTL settings
+# =============================================================================
+cache:
+  funding_ttl_seconds: 60
+  orderbook_ttl_seconds: 15
+  open_interest_ttl_seconds: 60
+  degraded_mode: true
+
+# =============================================================================
+# RATE LIMITS - Provider protection
+# =============================================================================
+rate_limits:
+  bybit_requests_per_minute: 60
+  coinglass_requests_per_minute: 30
+  circuit_breaker_failures: 5
+  circuit_breaker_backoff_seconds: 30
+
+# =============================================================================
+# SCHEDULE - Loop mode timing
+# =============================================================================
+schedule:
+  interval_seconds: 300  # 5 minutes
+
+# =============================================================================
+# DISCLAIMER - SEC compliance (do not remove)
+# =============================================================================
+disclaimer:
+  text: >-
+    This analysis is for informational purposes only and does not constitute
+    financial advice. Trading derivatives carries substantial risk of loss.
+    Past performance is not indicative of future results. Do your own research.
+  short_text: "Not financial advice. DYOR."
+
+# =============================================================================
+# GUARDRAILS - Safety settings (read_only cannot be disabled)
+# =============================================================================
+guardrails:
+  read_only: true  # CANNOT be disabled — no trade execution code exists
+  max_analyses_per_day: 500
+  max_cost_per_day_usd: "10.00"
+  quiet_hours:
+    enabled: false
+    start_utc: "22:00"
+    end_utc: "08:00"
