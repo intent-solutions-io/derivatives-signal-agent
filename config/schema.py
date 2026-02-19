@@ -193,6 +193,7 @@ class GuardrailsConfig(BaseModel):
 class ConfigSchema(BaseModel):
     """Root configuration schema."""
     version: str = Field("1.0.0", description="Config schema version")
+    membership_id: str = Field("", description="Whop membership ID for license tracking")
     bybit: BybitConfig = Field(default_factory=BybitConfig)
     coinglass: CoinglassConfig = Field(default_factory=CoinglassConfig)
     claude: ClaudeConfig = Field(default_factory=ClaudeConfig)

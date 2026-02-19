@@ -159,6 +159,7 @@ async def main():
         "mode": "once" if args.once else "loop",
         "symbols": config.analysis.symbols,
         "storage": config.storage.backend.value,
+        "membership_id": config.membership_id or "unregistered",
     }))
 
     if args.once:
